@@ -26,6 +26,7 @@ const CarouselComponent = () => {
         ],
     };
 
+    //TODO: Get images through backend or organize in a separate file
     const images = [
         "https://images.pexels.com/photos/1681010/pexels-photo-1681010.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
         "https://images.pexels.com/photos/18891640/pexels-photo-18891640/free-photo-of-cinematic-portrait-of-teen.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1",
