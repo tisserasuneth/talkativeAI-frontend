@@ -9,6 +9,8 @@ const CarouselComponent = () => {
         autoplaySpeed: 2000,
         infinite: true,
         speed: 1000,
+        draggable: false,
+        swiwable: false,
         slidesToScroll: 1,
         responsive: [
             {

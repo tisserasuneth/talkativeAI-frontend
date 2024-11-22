@@ -1,6 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import TextField from '@mui/material/TextField';
+import Box from '@mui/material/Box';
+
+import {
+    ChatAvatar,
+    ChatMessages,
+    ChatInput,
+    ChatDrawer,
+    ChatProfile
+} from '../components/chat';
+
+import { motion, AnimatePresence } from 'framer-motion';
+
 
 const Chat = ({ character }) => {
     const [messages, setMessages] = useState([]);
@@ -8,53 +19,90 @@ const Chat = ({ character }) => {
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
-    if (!character) return navigate('/');
+    // Temporary avatar for character
+    if (character) {
+        character.avatar = 'https://images.pexels.com/photos/2182970/pexels-photo-2182970.jpeg?auto=compress&cs=tinysrgb&w=600';
+        character.description = 'a flimsy person that loves enjoying the outdoors and the smaller things in life. Careful with finances but also not shy to spend. Always traveling. Loves cooking. Loves cookies.';
+    }
+
+    const [open, setOpen] = useState(false);
+
+    const toggleDrawer = (newOpen) => () => {
+        setOpen(newOpen);
+    };
+
+    // Redirect to homepage if no character is set
+    useEffect(() => {
+        if (!character) navigate('/');
+    }, [character, navigate]);
+
+    // Placeholder for receiving WebSocket messages
+    const receiveMessage = (text) => {
+        setMessages((prevMessages) => [
+            ...prevMessages,
+            { text, sender: 'ai' },
+        ]);
+        setLoading(false);
+    };
 
     const handleSendMessage = async () => {
-        if (!userInput) return;
+        if (!userInput.trim()) return;
         setMessages([...messages, { text: userInput, sender: 'user' }]);
         setUserInput('');
         setLoading(true);
 
-
+        // Simulate WebSocket message after delay
         setTimeout(() => {
-            setMessages((prevMessages) => [
-                ...prevMessages,
-                { text: `Hello, my name is ${character.name}. How can I help you today?`, sender: 'ai' },
-            ]);
-            setLoading(false);
-        }, 1000);
+            receiveMessage(
+                `Hello, my name is ${character.name}. How can I help you today?`
+            );
+        }, 1500);
     };
 
-
     return (
-        <div>
-            <h1>Chat with {character.name}</h1>
-            <div className="chat-window">
-                {messages.map((msg, index) => (
-                    <div key={index} className={msg.sender}>
-                        <strong>{msg.sender === 'user' ? 'You: ' : 'AI: '}</strong>
-                        {msg.text}
-                    </div>
-                ))}
-                {loading && <div>AI is typing...</div>}
-            </div>
+        <Box
+            sx={{
+                height: '100vh',
+                width: '100vw',
+                display: 'flex',
+                position: 'relative', // Allows absolute positioning of ChatDrawer
+            }}
+        >
+            <ChatDrawer open={open} toggleDrawer={toggleDrawer} />
 
-            <TextField
-                variant='outlined'
-                fullWidth
-                multiline
-                value={userInput}
-                onChange={(e) => setUserInput(e.target.value)}
-                placeholder="Type a message..."
-            />
-            <button onClick={handleSendMessage} disabled={loading}>
-                Send
-            </button>
-
-            <button onClick={() => navigate('/')}>Back to Character Creation</button>
-        </div>
+            <Box
+                sx={{
+                    display: 'flex',
+                    backgroundColor: '#18181b',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    height: '100vh',
+                    width: '100%',
+                    transition: 'margin-left 0.7s ease',
+                    marginLeft: open ? '10vw' : '0vw',
+                }}
+            >
+                <ChatAvatar character={character} messages={messages} />
+                <AnimatePresence>
+                    {messages.length > 0 && (
+                        <motion.div
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            exit={{ opacity: 0, y: 10 }}
+                            transition={{ duration: 1 }}
+                            style={{ width: '100%', display: 'flex', justifyContent: 'center' }}
+                        >
+                            <ChatMessages character={character} data={{ messages, loading }} />
+                        </motion.div>
+                    )}
+                </AnimatePresence>
+                <ChatInput functions={{ handleSendMessage, setUserInput }} userInput={userInput} loading={loading} />
+            </Box>
+            <ChatProfile character={character} />
+        </Box>
     );
+
 };
 
 export default Chat;

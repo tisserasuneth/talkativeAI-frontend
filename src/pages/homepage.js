@@ -2,17 +2,15 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 
-import Box from '@mui/material/Box';
-import TextField from '@mui/material/TextField';
-import Button from '@mui/material/Button';
-import Container from '@mui/material/Container';
+import { Container, Box } from '@mui/material';
 
 import Carousel from '../components/carousel';
 import WebGlCanvas from '../components/background-animation';
+import TextField from '../components/text-field';
 
-import TextFieldStyle from '../styles/text-field';
+import { HomePageTextFieldStyle } from '../styles/text-field';
 
-const CharacterCreation = ({ setCharacter }) => {
+const HomePage = ({ setCharacter }) => {
     const [name, setName] = useState('');
     const navigate = useNavigate();
 
@@ -83,35 +81,9 @@ const CharacterCreation = ({ setCharacter }) => {
                     </motion.div>
 
                     <TextField
-                        label='Character Name'
-                        value={name}
-                        onChange={(e) => setName(e.target.value)}
-                        rows={1}
-                        fullWidth
-                        sx={TextFieldStyle}
-                        variant='filled'
+                        data={{ placeholder: 'Enter your name', userInput: name, style: HomePageTextFieldStyle }}
+                        executeFunction={setName}
                     />
-
-                    <motion.div
-                        className='homepage-button-container'
-                        whileHover={{ scale: 1.1 }}
-                        whileTap={{ scale: 0.9 }}
-                        transition={{ type: 'spring', stiffness: 400, damping: 10 }}
-                    >
-                        <Button
-                            sx={{
-                                width: '100%',
-                                height: '100%',
-                                backgroundColor: "rgba(0, 0, 0, 1)",
-                                color: 'white',
-                                boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.5)',
-                                borderRadius: '50px',
-                            }}
-                            type='submit'
-                        >
-                            Bring Alive
-                        </Button>
-                    </motion.div>
                 </Box>
 
                 <Box
@@ -126,4 +98,4 @@ const CharacterCreation = ({ setCharacter }) => {
     );
 };
 
-export default CharacterCreation;
+export default HomePage;
