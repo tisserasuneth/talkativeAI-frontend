@@ -1,23 +1,35 @@
-const TextFieldStyle = {
-    borderRadius: '20px',
-    boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.5)',
-    '& .MuiInputBase-root': {
+
+const muiStyles = {
+    '& .MuiOutlinedInput-root': {
         color: 'white',
+        borderRadius: 'inherit',
     },
-    '& .MuiFormLabel-root': {
-        color: 'white',
+    '& .MuiOutlinedInput-notchedOutline': {
+        borderColor: '#424242',
     },
-    '& .MuiFormLabel-root.Mui-focused': {
-        color: 'lightblue',
+    '& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline': {
+        borderColor: '#424242',
     },
-    '& .MuiFilledInput-underline': {
-        borderBottom: 'hidden',
+    '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+        borderColor: '#424242',
     },
     '& .MuiFilledInput-root': {
-        backgroundColor: 'rgba(255, 255, 255, 0.05)',
         borderRadius: 'inherit',
         overflow: 'hidden',
     },
+}
+
+
+const HomePageTextFieldStyle = {
+    borderRadius: '40px',
+    boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.5)',
+    ...muiStyles,
 };
 
-export default TextFieldStyle;
+const ChatPageTextFieldStyle = {
+    backgroundColor: '#1e1e1e',
+    borderRadius: '40px',
+    ...muiStyles,
+}
+
+export { HomePageTextFieldStyle, ChatPageTextFieldStyle };

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
-import CharacterCreation from './pages/character-creation';
+import HomePage from './pages/homepage';
 import Chat from './pages/chat';
 
 function App() {
@@ -9,7 +9,7 @@ function App() {
   return (
     <Router>
       <Routes>
-        <Route path="/" element={<CharacterCreation setCharacter={setCharacter} />} />
+        <Route path="/" element={<HomePage setCharacter={setCharacter} />} />
         <Route path="/chat" element={<Chat character={character} />} />
       </Routes>
     </Router>

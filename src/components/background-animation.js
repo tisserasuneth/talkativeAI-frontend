@@ -12,7 +12,7 @@ const WebGLAnimation = () => {
         const calculateScaleFactor = () => {
             const width = window.innerWidth;
             if (width > 1500) return 5.0;
-            return 2.0;
+            return 4.0;
         };
 
         class Stage {
