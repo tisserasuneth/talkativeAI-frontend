@@ -19,10 +19,8 @@ const Chat = ({ character }) => {
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
 
-    // Temporary avatar for character
     if (character) {
         character.avatar = 'https://images.pexels.com/photos/2182970/pexels-photo-2182970.jpeg?auto=compress&cs=tinysrgb&w=600';
-        character.description = 'a flimsy person that loves enjoying the outdoors and the smaller things in life. Careful with finances but also not shy to spend. Always traveling. Loves cooking. Loves cookies.';
     }
 
     const [open, setOpen] = useState(false);
@@ -65,7 +63,7 @@ const Chat = ({ character }) => {
                 height: '100vh',
                 width: '100vw',
                 display: 'flex',
-                position: 'relative', // Allows absolute positioning of ChatDrawer
+                position: 'relative',
             }}
         >
             <ChatDrawer open={open} toggleDrawer={toggleDrawer} />
