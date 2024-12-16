@@ -203,6 +203,7 @@ const WebGLAnimation = () => {
         return () => {
             window.removeEventListener("mousemove", handleMouseMove);
             window.removeEventListener("resize", handleResize);
+            stage.renderer.dispose();
         };
     }, []);
 

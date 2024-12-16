@@ -4,7 +4,7 @@ import {
 } from '@mui/material';
 
 import { ChatPageTextFieldStyle } from '../../styles/text-field';
-import TextField from '../text-field';
+import SubmitField from '../submit-field';
 
 const ChatInput = ({ functions, userInput, loading }) => {
 
@@ -33,7 +33,7 @@ const ChatInput = ({ functions, userInput, loading }) => {
                         gap: 2,
                     }}
                 >
-                    <TextField
+                    <SubmitField
                         data={{
                             placeholder: 'Type a message...',
                             userInput,

@@ -81,7 +81,10 @@ const ChatProfile = ({ character }) => {
                             Age: {character && character.age ? character.age : 'N/A'}
                         </p>
                         <p style={{ fontSize: '0.7rem', margin: '5px 0', color: '#bbbbbb' }}>
-                            {character && character.description ? character.description : 'No description available'}
+                            Location: {character && character.location ? character.location : 'N/A'}
+                        </p>
+                        <p style={{ fontSize: '0.7rem', margin: '5px 0', color: '#bbbbbb' }}>
+                            {character && character.summary ? character.summary : 'No description available'}
                         </p>
                     </Box>
                 </Box>
