@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import { motion } from 'framer-motion';
 
 import {
@@ -7,6 +8,7 @@ import {
     Box,
     Typography,
     IconButton,
+    CircularProgress,
 } from '@mui/material';
 
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
@@ -17,17 +19,66 @@ import TextField from '../components/text-field';
 
 import { HomePageTextFieldStyle } from '../styles/text-field';
 
+import PERSON_STATES from '../constants/person';
+
+const PROTOCOL = process.env.PROTOCOL || 'http';
+const HOST = process.env.HOST || 'localhost:8080/api';
+
 const HomePage = ({ setCharacter }) => {
+
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
     const [personalize, setPersonalize] = useState('');
+    const [creating, setCreating] = useState(false);
+
     const navigate = useNavigate();
 
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        setCharacter({ name, description, personalize });
-        navigate('/chat');
+        setCreating(true);
+
+        let characterId = null;
+
+        try {
+            const response = await axios.post(`${PROTOCOL}://${HOST}/person`, {
+                name,
+                description,
+                personalize,
+            });
+
+            characterId = response?.data?.character;
+
+        } catch (error) {
+            alert('Failed to create character. Please try again.');
+        }
+
+        try {
+            const DELAY = 3000;
+            const TIMEOUT = 30000;
+            const START_TIME = Date.now();
+            let COMPLETED = false;
+
+            while (!COMPLETED && Date.now() - START_TIME < TIMEOUT) {
+                const response = await axios.get(`${PROTOCOL}://${HOST}/person/${characterId}`);
+                const character = response?.data;
+
+                if (character?.metaData?.state === PERSON_STATES.COMPLETED) {
+                    COMPLETED = true;
+                    setCharacter(character);
+                    navigate('/chat');
+                } else if (character?.metaData?.state === PERSON_STATES.FAILED) {
+                    COMPLETED = true;
+                    alert('Character creation failed. Please try again.');
+                }
+
+                await new Promise((resolve) => setTimeout(resolve, DELAY));
+            }
+
+        } catch (error) {
+            alert('Character creation failed. Please try again.');
+        }
     };
+
 
     useEffect(() => {
         if (!name) {
@@ -162,11 +213,15 @@ const HomePage = ({ setCharacter }) => {
                                             color: personalize.trim() ? 'rgba(255, 255, 255, 0.87)' : 'rgba(255, 255, 255, 0.5)',
                                         }}
                                     >
-                                        <ArrowForwardIcon
-                                            sx={{
-                                                color: personalize.trim() ? 'rgba(255, 255, 255, 0.87)' : 'rgba(255, 255, 255, 0.5)',
-                                            }}
-                                        />
+                                        {creating ? (
+                                            <CircularProgress size={24} sx={{ color: 'rgba(255, 255, 255, 0.87)' }} />
+                                        ) : (
+                                                <ArrowForwardIcon
+                                                    sx={{
+                                                        color: personalize.trim() ? 'rgba(255, 255, 255, 0.87)' : 'rgba(255, 255, 255, 0.5)',
+                                                    }}
+                                                />
+                                        )}
                                     </IconButton>
                                 </motion.div>
                             </Box>

@@ -1,0 +1,8 @@
+const PERSON_STATES = {
+    INITIAL: 'INITIAL',
+    PROCESSING: 'PROCESSING',
+    COMPLETED: 'COMPLETED',
+    FAILED: 'FAILED',
+};
+
+export default PERSON_STATES;
