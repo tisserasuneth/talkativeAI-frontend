@@ -65,7 +65,7 @@ const ChatProfile = ({ character }) => {
                         }}
                     >
                         <Avatar
-                            src={character && character.avatar}
+                            src={character && character.image}
                             sx={{
                                 width: '120px',
                                 height: '120px',

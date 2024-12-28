@@ -2,6 +2,7 @@ import { Box, Typography, Avatar } from "@mui/material";
 import { motion } from "framer-motion";
 
 const ChatAvatar = ({ character, messages }) => {
+
     return (
         <Box sx={{
             color: 'white',
@@ -24,7 +25,7 @@ const ChatAvatar = ({ character, messages }) => {
                 }}
             >
                 <Avatar
-                    src={character && character.avatar}
+                    src={character && character.image}
                     sx={{
                         width: messages.length > 0 ? '50px' : '100px',
                         height: messages.length > 0 ? '50px' : '100px',

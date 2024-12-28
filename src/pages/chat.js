@@ -16,13 +16,9 @@ const Chat = ({ character }) => {
     const [messages, setMessages] = useState([]);
     const [userInput, setUserInput] = useState('');
     const [loading, setLoading] = useState(false);
-    const navigate = useNavigate();
-
-    if (character) {
-        character.avatar = 'https://images.pexels.com/photos/2182970/pexels-photo-2182970.jpeg?auto=compress&cs=tinysrgb&w=600';
-    }
-
     const [open, setOpen] = useState(false);
+
+    const navigate = useNavigate();
 
     const toggleDrawer = (newOpen) => () => {
         setOpen(newOpen);
