@@ -1,27 +1,13 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { Container, Box, Typography, IconButton, CircularProgress, MenuItem, Select, FormControl, Snackbar, Alert } from '@mui/material';
 import { motion } from 'framer-motion';
-
-import {
-    Container,
-    Box,
-    Typography,
-    IconButton,
-    CircularProgress,
-    MenuItem,
-    Select,
-    FormControl,
-} from '@mui/material';
-
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
-
 import Carousel from '../components/carousel';
 import WebGlCanvas from '../components/background-animation';
 import TextField from '../components/text-field';
-
 import { HomePageTextFieldStyle } from '../styles/text-field';
-
 import PERSON_STATES from '../constants/person';
 
 const PROTOCOL = process.env.PROTOCOL || 'http';
@@ -32,9 +18,10 @@ const HomePage = ({ setCharacter }) => {
     const [description, setDescription] = useState('');
     const [tone, setTone] = useState('');
     const [creating, setCreating] = useState(false);
+    const [alertOpen, setAlertOpen] = useState(false);
+    const [alertMessage, setAlertMessage] = useState('');
 
     const navigate = useNavigate();
-
 
     const fetchCharacterImage = async (character) => {
         try {
@@ -45,9 +32,21 @@ const HomePage = ({ setCharacter }) => {
         }
     }
 
+    const resetForm = () => {
+        setName('');
+        setDescription('');
+        setTone('');
+        setCreating(false);
+    }
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setCreating(true);
+
+        const DELAY = 3000;
+        const TIMEOUT = 30000;
+        const START_TIME = Date.now();
+        let COMPLETED = false;
 
         let characterId = null;
 
@@ -59,16 +58,6 @@ const HomePage = ({ setCharacter }) => {
             });
 
             characterId = response?.data?.character;
-
-        } catch (error) {
-            alert('Failed to create character. Please try again.');
-        }
-
-        try {
-            const DELAY = 3000;
-            const TIMEOUT = 30000;
-            const START_TIME = Date.now();
-            let COMPLETED = false;
 
             while (!COMPLETED && Date.now() - START_TIME < TIMEOUT) {
                 const response = await axios.get(`${PROTOCOL}://${HOST}/person/${characterId}`);
@@ -82,15 +71,26 @@ const HomePage = ({ setCharacter }) => {
                     navigate('/chat');
                 } else if (character?.metaData?.state === PERSON_STATES.FAILED) {
                     COMPLETED = true;
-                    alert('Character creation failed. Please try again.');
+                    setAlertMessage('Character creation failed. Please try again.');
+                    setAlertOpen(true);
                 }
 
                 await new Promise((resolve) => setTimeout(resolve, DELAY));
             }
 
         } catch (error) {
-            alert('Character creation failed. Please try again.');
+            setAlertMessage('Character creation failed. Please try again.');
+            setAlertOpen(true);
+        } finally {
+            setCreating(false);
+            setTimeout(() => {  
+                resetForm();
+            }, 1500);
         }
+    };
+
+    const handleAlertClose = () => {
+        setAlertOpen(false);
     };
 
     useEffect(() => {
@@ -192,7 +192,7 @@ const HomePage = ({ setCharacter }) => {
                                     Description
                                 </Typography>
                                 <TextField
-                                    data={{ placeholder: `A Software Engineer. He likes to listen to many types of music... `, userInput: description, style: HomePageTextFieldStyle }}
+                                    data={{ placeholder: `A friendly man that likes dance music and going to concerts, raves`, userInput: description, style: HomePageTextFieldStyle }}
                                     executeFunction={setDescription}
                                 />
                             </motion.div>
@@ -211,6 +211,7 @@ const HomePage = ({ setCharacter }) => {
                                     <Select
                                         value={tone}
                                         onChange={(e) => setTone(e.target.value)}
+                                        displayEmpty
                                         sx={{
                                             ...HomePageTextFieldStyle,
                                             color: 'white',
@@ -228,6 +229,9 @@ const HomePage = ({ setCharacter }) => {
                                             },
                                         }}
                                     >
+                                        <MenuItem value="" disabled>
+                                            Select Tone
+                                        </MenuItem>
                                         <MenuItem value="PROFESSIONAL">
                                             Professional - Clear, confident, and formal
                                         </MenuItem>
@@ -288,6 +292,11 @@ const HomePage = ({ setCharacter }) => {
                     <Carousel />
                 </Box>
             </Container>
+            <Snackbar open={alertOpen} autoHideDuration={6000} onClose={handleAlertClose}>
+                <Alert onClose={handleAlertClose} severity="error" sx={{ width: '100%' }}>
+                    {alertMessage}
+                </Alert>
+            </Snackbar>
         </div >
     );
 };
