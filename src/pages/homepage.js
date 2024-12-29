@@ -35,6 +35,16 @@ const HomePage = ({ setCharacter }) => {
 
     const navigate = useNavigate();
 
+
+    const fetchCharacterImage = async (character) => {
+        try {
+            const response = await axios.get(`${PROTOCOL}://${HOST}/person/${character._id}/image`);
+            return response?.data?.image;
+        } catch (error) {
+            return null;
+        }
+    }
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setCreating(true);
@@ -66,6 +76,8 @@ const HomePage = ({ setCharacter }) => {
 
                 if (character?.metaData?.state === PERSON_STATES.COMPLETED) {
                     COMPLETED = true;
+                    character.image = await fetchCharacterImage(character);
+
                     setCharacter(character);
                     navigate('/chat');
                 } else if (character?.metaData?.state === PERSON_STATES.FAILED) {
