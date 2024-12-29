@@ -9,6 +9,9 @@ import {
     Typography,
     IconButton,
     CircularProgress,
+    MenuItem,
+    Select,
+    FormControl,
 } from '@mui/material';
 
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
@@ -25,10 +28,9 @@ const PROTOCOL = process.env.PROTOCOL || 'http';
 const HOST = process.env.HOST || 'localhost:8080/api';
 
 const HomePage = ({ setCharacter }) => {
-
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
-    const [personalize, setPersonalize] = useState('');
+    const [tone, setTone] = useState('');
     const [creating, setCreating] = useState(false);
 
     const navigate = useNavigate();
@@ -43,7 +45,7 @@ const HomePage = ({ setCharacter }) => {
             const response = await axios.post(`${PROTOCOL}://${HOST}/person`, {
                 name,
                 description,
-                personalize,
+                tone,
             });
 
             characterId = response?.data?.character;
@@ -79,10 +81,9 @@ const HomePage = ({ setCharacter }) => {
         }
     };
 
-
     useEffect(() => {
         if (!name) {
-            setPersonalize('');
+            setTone('');
             setDescription('');
         }
     }, [name]);
@@ -147,11 +148,6 @@ const HomePage = ({ setCharacter }) => {
                         </h1>
                     </motion.div>
 
-                    <TextField
-                        data={{ placeholder: 'Character name', userInput: name, style: HomePageTextFieldStyle }}
-                        executeFunction={setName}
-                    />
-
                     <Box
                         sx={{
                             width: '100%',
@@ -160,6 +156,20 @@ const HomePage = ({ setCharacter }) => {
                             gap: 2,
                         }}
                     >
+
+                    <motion.div
+                        initial={{ opacity: 0, y: 10 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5 }}
+                    >
+                        <Typography variant="h6" sx={{ color: 'white', marginBottom: '0.5rem', fontSize: '15px' }}>
+                            Name
+                        </Typography>
+                        <TextField
+                            data={{ placeholder: 'Character name', userInput: name, style: HomePageTextFieldStyle }}
+                            executeFunction={setName}
+                        />
+                    </motion.div>
                         {name && (
                             <motion.div
                                 initial={{ opacity: 0, y: 10 }}
@@ -182,18 +192,48 @@ const HomePage = ({ setCharacter }) => {
                                 animate={{ opacity: 1, y: 0 }}
                                 transition={{ duration: 0.5 }}
                             >
-
                                 <Typography variant="h6" sx={{ color: 'white', marginBottom: '0.5rem', fontSize: '15px' }}>
-                                    Personalize
+                                    Tone
                                 </Typography>
-                                <TextField
-                                    data={{ placeholder: 'Respond in the tone of David Attenborough narrating a nature documentary... ', userInput: personalize, style: HomePageTextFieldStyle }}
-                                    executeFunction={setPersonalize}
-                                />
+                                <FormControl fullWidth>
+                                    <Select
+                                        value={tone}
+                                        onChange={(e) => setTone(e.target.value)}
+                                        sx={{
+                                            ...HomePageTextFieldStyle,
+                                            color: 'white',
+                                            '.MuiSelect-icon': {
+                                                color: '#424242',
+                                            },
+                                        }}
+                                        MenuProps={{
+                                            PaperProps: {
+                                                sx: {
+                                                    borderRadius: '12px',
+                                                    backgroundColor: 'rgba(255, 255, 255, 1)',
+                                                    color: 'black',
+                                                },
+                                            },
+                                        }}
+                                    >
+                                        <MenuItem value="PROFESSIONAL">
+                                            Professional - Clear, confident, and formal
+                                        </MenuItem>
+                                        <MenuItem value="FRIENDLY">
+                                            Friendly - Warm, supportive, and approachable
+                                        </MenuItem>
+                                        <MenuItem value="CREATIVE">
+                                            Creative - Expressive, imaginative, and unique
+                                        </MenuItem>
+                                        <MenuItem value="HUMOROUS">
+                                            Humorous - Witty, playful, and lighthearted
+                                        </MenuItem>
+                                    </Select>
+                                </FormControl>
                             </motion.div>
                         )}
 
-                        {(name && description && personalize) && (
+                        {(name && description && tone) && (
                             <Box
                                 sx={{
                                     display: 'flex',
@@ -208,9 +248,9 @@ const HomePage = ({ setCharacter }) => {
                                 >
                                     <IconButton
                                         type='submit'
-                                        disabled={!personalize.trim()}
+                                        disabled={!tone.trim()}
                                         sx={{
-                                            color: personalize.trim() ? 'rgba(255, 255, 255, 0.87)' : 'rgba(255, 255, 255, 0.5)',
+                                            color: tone.trim() ? 'rgba(255, 255, 255, 0.87)' : 'rgba(255, 255, 255, 0.5)',
                                         }}
                                     >
                                         {creating ? (
@@ -218,7 +258,7 @@ const HomePage = ({ setCharacter }) => {
                                         ) : (
                                                 <ArrowForwardIcon
                                                     sx={{
-                                                        color: personalize.trim() ? 'rgba(255, 255, 255, 0.87)' : 'rgba(255, 255, 255, 0.5)',
+                                                        color: tone.trim() ? 'rgba(255, 255, 255, 0.87)' : 'rgba(255, 255, 255, 0.5)',
                                                     }}
                                                 />
                                         )}

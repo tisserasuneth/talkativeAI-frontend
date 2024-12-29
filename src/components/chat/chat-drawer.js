@@ -1,4 +1,4 @@
-import { Button, Drawer, Box, CircularProgress } from '@mui/material';
+import { Button, Drawer, Box, CircularProgress, Typography } from '@mui/material';
 import PsychologyAltIcon from '@mui/icons-material/PsychologyAlt';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 
@@ -84,12 +84,12 @@ const ChatDrawer = ({ open, toggleDrawer, character }) => {
                     {deleting ? (
                         <CircularProgress size={24} sx={{ color: 'rgba(255, 255, 255, 0.87)' }} />
                     ) : (
-                        <DeleteForeverIcon
-                            onClick={deleteCharacter}
-                            sx={{
-                                fontSize: '1.8rem',
-                                color: '#d11a2a',
-                            }} />
+                            <DeleteForeverIcon
+                                onClick={deleteCharacter}
+                                sx={{
+                                    fontSize: '1.5rem',
+                                    color: '#d11a2a',
+                                }} />
                     )}
                 </Button>
             </Drawer>
