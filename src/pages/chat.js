@@ -12,7 +12,7 @@ import {
 
 import { motion, AnimatePresence } from 'framer-motion';
 
-const Chat = ({ character }) => {
+const Chat = ({ character, setCharacter }) => {
     const [messages, setMessages] = useState([]);
     const [userInput, setUserInput] = useState('');
     const [loading, setLoading] = useState(false);
@@ -61,7 +61,7 @@ const Chat = ({ character }) => {
                 position: 'relative',
             }}
         >
-            <ChatDrawer open={open} toggleDrawer={toggleDrawer} character={character} />
+            <ChatDrawer open={open} toggleDrawer={toggleDrawer} character={character} setCharacter={setCharacter} />
 
             <Box
                 sx={{

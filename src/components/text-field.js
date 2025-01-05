@@ -4,11 +4,13 @@ import {
 
 const TextField = ({ data, executeFunction }) => {
 
-    const { placeholder, userInput, style } = data;
+    const { placeholder, userInput, style, multiline = false } = data;
 
     return (
         <MuiTextField
             placeholder={placeholder}
+            multiline={multiline}
+            {...(multiline && { rows: 15 })}
             value={userInput}
             onChange={(e) => executeFunction(e.target.value)}
             fullWidth
