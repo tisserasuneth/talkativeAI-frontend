@@ -11,14 +11,35 @@ const muiStyles = {
         borderColor: '#424242',
     },
     '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
-        borderColor: '#424242',
+        border: '#424242',
     },
     '& .MuiFilledInput-root': {
         borderRadius: 'inherit',
         overflow: 'hidden',
     },
-}
+};
 
+const muiDrawerStyle = {
+    '& .MuiOutlinedInput-root': {
+        color: 'white',
+        borderRadius: 'inherit',
+    },
+    '& .MuiOutlinedInput-notchedOutline': {
+        border: 'none',
+    },
+    '& .MuiOutlinedInput-root:hover .MuiOutlinedInput-notchedOutline': {
+        border: 'none',
+    },
+    '& .MuiOutlinedInput-root.Mui-focused .MuiOutlinedInput-notchedOutline': {
+        border: 'none',
+    },
+    '& .MuiFilledInput-root': {
+        overflow: 'hidden',
+    },
+    '& .MuiInputBase-input': {
+        fontSize: '0.9rem',
+    },
+}
 
 const HomePageTextFieldStyle = {
     borderRadius: '40px',
@@ -32,4 +53,9 @@ const ChatPageTextFieldStyle = {
     ...muiStyles,
 }
 
-export { HomePageTextFieldStyle, ChatPageTextFieldStyle };
+const ChatDrawerTextFieldStyle = {
+    backgroundColor: '#1e1e1e',
+    ...muiDrawerStyle,
+}
+
+export { HomePageTextFieldStyle, ChatPageTextFieldStyle, ChatDrawerTextFieldStyle };

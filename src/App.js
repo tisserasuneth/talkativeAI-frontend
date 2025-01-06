@@ -10,7 +10,7 @@ function App() {
     <Router>
       <Routes>
         <Route path="/" element={<HomePage setCharacter={setCharacter} />} />
-        <Route path="/chat" element={<Chat character={character} />} />
+        <Route path="/chat" element={<Chat character={character} setCharacter={setCharacter} />} />
       </Routes>
     </Router>
   );
