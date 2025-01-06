@@ -3,11 +3,11 @@ import PsychologyAltIcon from '@mui/icons-material/PsychologyAlt';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import EmojiPeopleIcon from '@mui/icons-material/EmojiPeople';
 
-import TextField from '../text-field';
-import { ChatDrawerTextFieldStyle } from '../../styles/text-field';
+import Avatar from '@mui/material/Avatar';
 
-import IconButton from '@mui/material/IconButton';
-import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import LinkedIn from './assets/linkedin.png';
+import Github from './assets/github.png';
+import Profile from './assets/profile.png';
 
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
@@ -21,9 +21,10 @@ const ChatDrawer = ({ open, toggleDrawer, character, setCharacter }) => {
     const PROTOCOL = process.env.PROTOCOL || 'http';
     const HOST = process.env.HOST || 'localhost:8080/api';
 
+    const LINKEDIN_URL = 'https://www.linkedin.com/in/tisserasuneth';
+    const GITHUB_URL = 'https://www.github.com/tisserasuneth';
+
     const [deleting, setDeleting] = useState(false);
-    const [updating, setUpdating] = useState(false);
-    const [description, setDescription] = useState('');
     const navigate = useNavigate();
 
     const deleteCharacter = async () => {
@@ -40,30 +41,7 @@ const ChatDrawer = ({ open, toggleDrawer, character, setCharacter }) => {
         } catch (error) {
             alert('Error encountered while deleting character');
         }
-    }
-
-    const updateCharacter = async () => {
-        try {
-            // const response = await axios.put(`${PROTOCOL}://${HOST}/person/${character._id}`, {
-            //     summary: description,
-            // });
-
-            const response = {
-                status: 200,
-            }
-
-            if (response?.status === 200) {
-                setUpdating(true);
-                setCharacter(character)
-                setTimeout(() => {
-                    setUpdating(false);
-                }, 3000);
-            }
-
-        } catch (error) {
-            alert('Error encountered while updating character');
-        }
-    }
+    };
 
     return (
         <>
@@ -113,52 +91,70 @@ const ChatDrawer = ({ open, toggleDrawer, character, setCharacter }) => {
                     }}
                 >
 
-                    <EmojiPeopleIcon
+                    <Typography
                         sx={{
-                            marginTop: '1rem',
-                            fontSize: '4rem',
+                            fontSize: '1.2rem',
                             color: 'white',
+                            fontWeight: '800',
                         }}
-                    />
+                    >
+                        Connect With Me
+                    </Typography>
 
-                     <Typography
+                    <Avatar
+                        src={Profile}
+                        sx={{
+                            width: '100px',
+                            height: '100px',
+                        }}
+                    >
+                    </Avatar>
+
+                    <Box>
+                        <Typography
                             sx={{
                                 fontSize: '1rem',
                                 color: 'white',
                                 fontWeight: '600',
                             }}
                         >
-                            Update Your Character
+                            Suneth Tissera
                         </Typography>
 
-                    <TextField 
-                    data={{
-                        placeholder: character.summary,
-                        userInput: description,
-                        style: ChatDrawerTextFieldStyle,
-                        multiline: true,
-                        }}
-                    executeFunction={setDescription}
-                    />
-
-                    <IconButton
-                        type='submit'
+                        <Box
                         sx={{
-                            color: 'rgba(255, 255, 255, 0.87)',
+                                display: 'flex',
+                                flexDirection: 'row',
+                                justifyContent: 'center',
+                                alignItems: 'center',
+                                gap: '1rem',
                         }}
                     >
-                        {updating ? (
-                            <CircularProgress size={24} sx={{ color: 'rgba(255, 255, 255, 0.87)' }} />
-                        ) : (
-                            <ArrowForwardIcon
-                                onClick={updateCharacter}
+                            <Box
+                                component="img"
+                                src={LinkedIn}
+                                alt="LinkedIn"
                                 sx={{
-                                    color: 'rgba(255, 255, 255, 0.87)',
-                                }}
+                                width: '30px',
+                                height: '30px',
+                                cursor: 'pointer',
+                            }}
+                                onClick={() => window.open(LINKEDIN_URL, '_blank')}
                             />
-                        )}
 
-                    </IconButton>
+                            <Box
+                                component="img"
+                                src={Github}
+                                alt="Github"
+                                sx={{
+                                    width: '50px',
+                                    height: '50px',
+                                    cursor: 'pointer',
+                                }}
+                                onClick={() => window.open(GITHUB_URL, '_blank')}
+                            />
+                        </Box>
+                    </Box>
                 </Box>
 
                 <Box
@@ -171,6 +167,7 @@ const ChatDrawer = ({ open, toggleDrawer, character, setCharacter }) => {
                     onClick={toggleDrawer(false)}
                 >
                 </Box>
+
                 <Button>
                     {deleting ? (
                         <CircularProgress size={24} sx={{ color: 'rgba(255, 255, 255, 0.87)' }} />
