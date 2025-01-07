@@ -1,22 +1,20 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Box from '@mui/material/Box';
-
-import {
-    ChatAvatar,
-    ChatMessages,
-    ChatInput,
-    ChatDrawer,
-    ChatProfile
-} from '../components/chat';
-
+import { ChatAvatar, ChatMessages, ChatInput, ChatDrawer, ChatProfile } from '../components/chat';
 import { motion, AnimatePresence } from 'framer-motion';
+import io from 'socket.io-client';
 
 const Chat = ({ character, setCharacter }) => {
+    console.log('Chat', character);
     const [messages, setMessages] = useState([]);
     const [userInput, setUserInput] = useState('');
     const [loading, setLoading] = useState(false);
     const [open, setOpen] = useState(false);
+    const [socket, setSocket] = useState(null);
+
+    const PROTOCOL = process.env.WSS_PROTOCOL || 'ws';
+    const HOST = process.env.HOST || 'localhost:8080';
 
     const navigate = useNavigate();
 
@@ -24,33 +22,75 @@ const Chat = ({ character, setCharacter }) => {
         setOpen(newOpen);
     };
 
-    // Redirect to homepage if no character is set
-    useEffect(() => {
-        if (!character) navigate('/');
-    }, [character, navigate]);
+    const socketAddress = useMemo(() => `${PROTOCOL}://${HOST}`, [PROTOCOL, HOST]);
+    const socketConfig = useMemo(() => ({
+        path: '/chat',
+        query: {
+            characterId: character?._id,
+        },
+        transports: ['websocket'],
+        reconnection: true,
+        reconnectionAttempts: 10,
+    }), [character?._id]);
 
-    // Placeholder for receiving WebSocket messages
-    const receiveMessage = (text) => {
+    useEffect(() => {
+        if (!character) {
+            navigate('/');
+            return;
+        }
+
+        const newSocket = io(socketAddress, socketConfig);
+
+        newSocket.on(Chat.EVENTS.SYSTEM_MESSAGE_CHUNK, handleSystemMessageChunk);
+        newSocket.on(Chat.EVENTS.SYSTEM_MESSAGE_END, handleSystemMessageEnd);
+        newSocket.on(Chat.EVENTS.ERROR, handleError);
+
+        setSocket(newSocket);
+
+        return () => {
+            newSocket.off(Chat.EVENTS.SYSTEM_MESSAGE_CHUNK, handleSystemMessageChunk);
+            newSocket.off(Chat.EVENTS.SYSTEM_MESSAGE_END, handleSystemMessageEnd);
+            newSocket.off(Chat.EVENTS.ERROR, handleError);
+            newSocket.disconnect();
+        };
+    }, [socketAddress, socketConfig, character, navigate]);
+
+    const handleSystemMessageChunk = (chunk) => {
+        setMessages((prevMessages) => [
+            ...prevMessages.slice(0, -1),
+            {
+                ...prevMessages[prevMessages.length - 1],
+                text: (prevMessages[prevMessages.length - 1]?.text || '') + chunk,
+            },
+        ]);
+        setLoading(true);
+    };
+
+    const handleSystemMessageEnd = () => {
+        setLoading(false);
+    };
+
+    const handleError = (error) => {
         setMessages((prevMessages) => [
             ...prevMessages,
-            { text, sender: 'ai' },
+            { text: `Error: ${error}`, sender: 'system' },
         ]);
         setLoading(false);
     };
 
-    const handleSendMessage = async () => {
-        if (!userInput.trim()) return;
-        setMessages([...messages, { text: userInput, sender: 'user' }]);
+    const handleSendMessage = () => {
+        if (!userInput.trim() || !socket) return;
+
+        const userMessage = { text: userInput, sender: 'user' };
+        const loadingMessage = { text: '', sender: 'ai' };
+        setMessages([...messages, userMessage, loadingMessage]);
         setUserInput('');
         setLoading(true);
 
-        // Simulate WebSocket message after delay
-        setTimeout(() => {
-            receiveMessage(
-                `Hello, my name is ${character.name}. How can I help you today?`
-            );
-        }, 1500);
-    };
+        socket.emit(Chat.EVENTS.NEW_MESSAGE, {
+            message: userInput,
+        });
+    };    
 
     return (
         <Box
@@ -90,12 +130,24 @@ const Chat = ({ character, setCharacter }) => {
                         </motion.div>
                     )}
                 </AnimatePresence>
-                <ChatInput functions={{ handleSendMessage, setUserInput }} userInput={userInput} loading={loading} />
+                <ChatInput
+                    functions={{ handleSendMessage, setUserInput }}
+                    userInput={userInput}
+                    loading={loading}
+                />
             </Box>
             <ChatProfile character={character} />
         </Box>
     );
+};
 
+Chat.EVENTS = {
+    SYSTEM_MESSAGE_CHUNK: 'system_message_chunk',
+    SYSTEM_MESSAGE_END: 'system_message_end',
+    MESSAGE_END: 'message_end',
+    DISCONNECT: 'disconnect',
+    ERROR: 'error',
+    NEW_MESSAGE: 'new_message',
 };
 
 export default Chat;
