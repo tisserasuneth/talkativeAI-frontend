@@ -1,11 +1,11 @@
 import { Box, Paper } from '@mui/material';
 import { motion } from 'framer-motion';
-import { useRef, useEffect } from 'react';
+import { useRef, useEffect, useState } from 'react';
 
 const ChatMessages = ({ character, data }) => {
-
     const { messages, loading } = data;
     const messagesEndRef = useRef(null);
+    const [dots, setDots] = useState('...');
 
     const scrollToBottom = () => {
         messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -15,9 +15,23 @@ const ChatMessages = ({ character, data }) => {
         scrollToBottom();
     }, [messages]);
 
+    useEffect(() => {
+        if (loading) {
+            const dotInterval = setInterval(() => {
+                setDots((prev) => {
+                    if (prev.length === 3) {
+                        return '.';
+                    } else {
+                        return prev + '.';
+                    }
+                });
+            }, 300);
+            return () => clearInterval(dotInterval);
+        }
+    }, [loading]);
+
     const aiBubbleColor = '#293241';
     const userBubbleColor = '#3d5a80';
-
 
     return (
         <Paper
@@ -58,36 +72,11 @@ const ChatMessages = ({ character, data }) => {
                             marginBottom: '20px',
                         }}
                     >
-                        {msg.text}
+                        {loading && index === (messages.length - 1) ? `${character.name} is typing${dots}` : msg.text}
                     </Box>
                 </motion.div>
             ))}
 
-            {loading && (
-                <motion.div
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.3, delay: 0.3 }}
-                    style={{
-                        display: 'flex',
-                        justifyContent: 'flex-start',
-                    }}
-                >
-                    <Box
-                        sx={{
-                            maxWidth: '75%',
-                            backgroundColor: aiBubbleColor,
-                            color: 'white',
-                            padding: '10px 15px',
-                            borderRadius: '15px',
-                            boxShadow: '0px 4px 10px rgba(0, 0, 0, 0.2)',
-                            wordWrap: 'break-word',
-                        }}
-                    >
-                        {character.name} is typing...
-                    </Box>
-                </motion.div>
-            )}
             <div ref={messagesEndRef} />
         </Paper>
     );
